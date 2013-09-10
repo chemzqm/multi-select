@@ -239,4 +239,10 @@ MultiSelect.prototype.appendValue = function(id) {
     '</li>').insertBefore(this.search);
 }
 
+MultiSelect.prototype.ids = function() {
+  return $.map(this.dropdown.find('.multiselect-item'), function(li) {
+    return $(li).attr('data-id');
+  })
+}
+
 module.exports = MultiSelect;
