@@ -29,6 +29,7 @@ MultiSelect.prototype.placeholder = function(placeholder) {
 }
 
 MultiSelect.prototype.renderData = function(data) {
+  this.data = data;
   data.forEach(function(o) {
     var parent = this.dropdown;
     if (Array.isArray(o.values)) {
