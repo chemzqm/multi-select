@@ -190,6 +190,7 @@ MultiSelect.prototype.addItem = function(ul, id, text) {
 
 MultiSelect.prototype.value = function(v) {
   if (arguments.length === 0) return this.source.val();
+  var pre = this.source.val();
   this.dropdown.find('.multiselect-item').show();
   this.container.find('.multiselect-search-choice').remove();
   var vs;
@@ -209,7 +210,9 @@ MultiSelect.prototype.value = function(v) {
       this.appendValue(id);
     }.bind(this));
   }
-  this.emit('change', vs || v);
+  if (pre != v) {
+    this.emit('change', vs || v);
+  }
 }
 
 MultiSelect.prototype.reset = function() {
