@@ -217,7 +217,6 @@ MultiSelect.prototype.value = function(v) {
 
 MultiSelect.prototype.reset = function() {
   this.value('');
-  this.placeholder();
 }
 
 MultiSelect.prototype.rebuild = function(data) {
