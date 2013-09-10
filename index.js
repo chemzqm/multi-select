@@ -220,11 +220,11 @@ MultiSelect.prototype.reset = function() {
 }
 
 MultiSelect.prototype.rebuild = function(data) {
-  if (this.rendered) {
+  if (this.data !== data) {
     this.reset();
     this.dropdown.html('');
+    this.renderData(data);
   }
-  this.renderData(data);
 }
 
 MultiSelect.prototype.max = function(number) {
