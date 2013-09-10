@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Example of tree-select</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="build/build.css">
+    <script src="build/build.js"></script>
+    <style>
+      body {
+        padding:100px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>功能</h2>
+    <ul>
+      <li>映射hidden input, 自动读写它的值</li>
+      <li>data 支持树型结构和数组结构数据</li>
+      <li>rebuild, 动态设定下拉选项</li>
+      <li>show, hide, reset, remove 显示, 隐藏, 重置为空, 销毁方法</li>
+      <li>placeholder, 占位符</li>
+      <li>支持多个选项</li>
+    </ul>
+    <button id="enable">enable</button>
+    <button id="disable">disable</button>
+    <button id="reset">reset</button>
+    <div class="group">
+      <label for="select">测试</label>
+      <input type="hidden" id="select" name="select" style="width:300px" class="select2-offscreen" value="3">
+    </div>
+    <p>
+      <span id="value"></span>
+    </p>
+
+    <div class="group">
+      Rebuild
+      <input type="hidden" id="select1" name="select1" style="width:300px" class="select2-offscreen">
+    </div>
+    <button id="rebuild">rebuild</button>
+
+    <div class="group">
+      Lazy data
+      <input type="hidden" id="select2" name="select2" style="width:300px" value="9">
+    </div>
+    <button id="reload">reload</button>
+
+    <script>
+      var MultiSelect = require('multi-select');
+      var data = [{
+        name: '受众群体',
+        values: [{
+          id: 0,
+          text: '人口属性'
+        }, {
+          id: 1,
+          text: '访问者行为'
+        }, {
+          id: 2,
+          text: '技术参数'
+        }, {
+          id: 3,
+          text: '移动设备'
+        }]
+      }, {
+        name: '广告数据',
+        values: [{
+          id: 4,
+          text: '点击引导'
+        }, {
+          id: 5,
+          text: '曝光引导'
+        }]
+      }]
+      var el = document.getElementById('select');
+      var select = new MultiSelect(el, data);
+      select.placeholder('请选择指标');
+      select.max(2);
+
+      var enable = document.getElementById('enable');
+      enable.addEventListener('click', function(){
+        select.show();
+      });
+
+      var disable = document.getElementById('disable');
+      disable.addEventListener('click', function(){
+        select.hide();
+      });
+
+      var reset = document.getElementById('reset');
+      reset.addEventListener('click', function(){
+        select.reset();
+      });
+
+      select.on('change', function(v){
+        var el = document.getElementById('value');
+        el.innerHTML = v;
+      });
+
+      var s1 = document.getElementById('select1');
+      var select1 = new MultiSelect(s1, [
+          {id: 1, text: 'Beijing'},
+          {id: 2, text: 'Shanghai'},
+          {id: 3, text: 'Shenzhen'}
+        ]);
+      select1.placeholder('请选择');
+      select1.max(1);
+
+      var rebuild = document.getElementById('rebuild');
+      rebuild.addEventListener('click', function(){
+        select1.rebuild([
+          {id: 4, text: 'Tianjing'},
+          {id: 5, text: 'Jining'},
+          {id: 6, text: 'Sichuan'}
+        ]);
+      }, false);
+
+      var reload = document.getElementById('reload');
+      var s2 = document.getElementById('select2');
+      var select2 = new MultiSelect(s2);
+      reload.addEventListener('click', function(){
+        select2.rebuild([
+            {id: 7, text: 'Guangzhou'},
+            {id: 8, text: 'Baotou'},
+            {id: 9, text: 'Xian'}
+        ])
+      }, false);
+    </script>
+  </body>
+</html>
