@@ -178,6 +178,8 @@
   border-radius: 0 0 4px 4px;
   -webkit-box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
   box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
+  max-height: 220px;
+  overflow: auto;
 }
 
 .multiselect-drop.multiselect-drop-active {
