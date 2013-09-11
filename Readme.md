@@ -2,6 +2,8 @@
 
   A simple multi select component
 
+  [Demo](http://chemzqm.github.io/multi-select/index.html)
+
 ## Installation
 
   Install with [component(1)](http://component.io):
