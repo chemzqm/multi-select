@@ -133,7 +133,7 @@
   top: 3px;
   font-size: 1px;
   outline: none;
-  background: url(".//multi-select/./select2.png") right top no-repeat;
+  background: url("multi-select/./select2.png") right top no-repeat;
 }
 
 .multiselect-search-choice-close:hover {
@@ -235,11 +235,11 @@ ul .multiselect-item {
 }
 
 .multiselect-arrow {
-  background: url(".//multi-select/./select2.png") -19px -7px no-repeat;
+  background: url("multi-select/./select2.png") -19px -7px no-repeat;
 }
 
 .multiselect-group.multiselect-collpase .multiselect-arrow {
-  background: url(".//multi-select/./select2.png") -3px -7px no-repeat;
+  background: url("multi-select/./select2.png") -3px -7px no-repeat;
 }
 
 .multiselect-drop .multiselect-list {

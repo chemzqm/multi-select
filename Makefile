@@ -1,6 +1,6 @@
 
 build: components index.js multi-select.css template.js
-	@component build --dev
+	@component build
 	@touch build
 
 start:
