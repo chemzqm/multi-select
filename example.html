@@ -17,12 +17,10 @@
       <li>映射hidden input, 自动读写它的值</li>
       <li>data 支持树型结构和数组结构数据</li>
       <li>rebuild, 动态设定下拉选项</li>
-      <li>show, hide, reset, remove 显示, 隐藏, 重置为空, 销毁方法</li>
+      <li>reset, remove 显示, 隐藏, 重置为空, 销毁方法</li>
       <li>placeholder, 占位符</li>
       <li>支持多个选项</li>
     </ul>
-    <button id="enable">enable</button>
-    <button id="disable">disable</button>
     <button id="reset">reset</button>
     <div class="group">
       <label for="select">测试</label>
@@ -75,16 +73,6 @@
       var select = new MultiSelect(el, data);
       select.placeholder('请选择指标');
       select.max(2);
-
-      var enable = document.getElementById('enable');
-      enable.addEventListener('click', function(){
-        select.show();
-      });
-
-      var disable = document.getElementById('disable');
-      disable.addEventListener('click', function(){
-        select.hide();
-      });
 
       var reset = document.getElementById('reset');
       reset.addEventListener('click', function(){

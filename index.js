@@ -169,22 +169,6 @@ MultiSelect.prototype.documentClick = function(e) {
   }
 }
 
-MultiSelect.prototype.show = function() {
-  var el = this.source;
-  el.parent('.group').show();
-  this.el.show();
-  el.attr('disabled', false);
-  return this;
-}
-
-MultiSelect.prototype.hide = function() {
-  var el = this.source;
-  el.parent('.group').hide();
-  this.el.hide();
-  el.attr('disabled', true);
-  return this;
-}
-
 MultiSelect.prototype.addGroup = function(parent, data) {
   var title = $('<div class="multiselect-group"><i class="multiselect-arrow"></i>' + data.name + '</div>');
   var ul = $('<ul class="multiselect-list"></ul>');
