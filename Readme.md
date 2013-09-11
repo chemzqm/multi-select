@@ -20,35 +20,35 @@
 
 * `data` should contain objects with `id` and `text` attributes or `name `and `values` attributes for unselectable group element.
 
-### MultiSelect#placeholder(text)
+### .placeholder(text)
 
 Set placeholder with `text`.
 
-### MultiSelect#value([value])
+### .value([value])
 
 Get or set the value.
 
-### MultiSelect#show()
+### .show()
 
 With parent element which has class `group` shown.
 
-### MultiSelect#hide()
+### .hide()
 
 With parent element which has class `group` hidden.
 
-### MultiSelect#rebuild(data)
+### .rebuild(data)
 
 Reset all the options with `data`.
 
-### MultiSelect#remove()
+### .remove()
 
 Destroy the MultiSelect instance.
 
-### MultiSelect#max(number)
+### .max(number)
 
 Limit the maximum selected items.
 
-### MultiSelect#reset()
+### .reset()
 
 ## License
 
