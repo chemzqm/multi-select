@@ -63,16 +63,27 @@ MultiSelect.prototype.initEvents = function() {
         var li = this.container.find('.multiselect-search-choice:last');
         li.remove();
         this.saveItems();
-        if (this.limit) {
-          this.limit.hide();
-          this.limit.siblings().show();
-        }
+        this.hideLimit();
         break;
       default:
     }
   }.bind(this))
   this._documentClick = this.documentClick.bind(this);
   $(document).on('click', this._documentClick);
+}
+
+MultiSelect.prototype.hideLimit = function() {
+  if (!this.limit) return;
+  var v = this.value();
+  this.limit.hide();
+  this.limit.siblings().show();
+  if (v) {
+    var vs = v.split(',');
+    vs.forEach(function(id) {
+      var li = this.dropdown.find('[data-id="' + id + '"]');
+      li.hide();
+    }.bind(this));
+  }
 }
 
 MultiSelect.prototype.remove = function() {
@@ -91,6 +102,7 @@ MultiSelect.prototype.containerClick = function(e) {
     var li = target.parent();
     li.remove();
     this.saveItems();
+    this.hideLimit();
     return;
   }
   if (this.container.hasClass('multiselect-dropdown-open')) {
@@ -105,13 +117,12 @@ MultiSelect.prototype.containerClick = function(e) {
         this.limit.show();
         this.limit.siblings().hide();
       } else {
-        this.limit.hide();
-        this.limit.siblings().show();
+        this.hideLimit();
       }
     }
     this.container.addClass('multiselect-dropdown-open');
-    this.dropdown.show();
     this.container.addClass('multiselect-focus');
+    this.dropdown.show();
   }
 }
 
@@ -134,6 +145,7 @@ MultiSelect.prototype.dropdownClick = function(e) {
     this.container.removeClass('multiselect-dropdown-open');
     this.container.removeClass('multiselect-focus');
     this.dropdown.hide();
+    this.input.focus();
   }
 }
 
@@ -148,7 +160,7 @@ MultiSelect.prototype.saveItems = function() {
 
 MultiSelect.prototype.documentClick = function(e) {
   var el = $(e.target).parents('.multiselect');
-  if (el.length === 0 || el.get(0) !== this.el.get(0)) {
+  if (!el.is(this.el)) {
     this.container.removeClass('multiselect-focus');
     this.container.removeClass('multiselect-dropdown-open');
     this.dropdown.hide();
@@ -219,16 +231,34 @@ MultiSelect.prototype.reset = function() {
   this.value('');
 }
 
+function contains (arr, sub) {
+  var contain = true;
+  sub.forEach(function(v) {
+    if (arr.indexOf(v) === -1) contain = false;
+  })
+  return contain;
+}
+
 MultiSelect.prototype.rebuild = function(data) {
+  if (this.data === data) return;
+  if (!this.data) return this.renderData(data);
+  var ids = this.data.map(function(d) {
+    return d.id.toString();
+  });
+  var v = this.value();
+  if (v && contains(ids, v.split(','))) {
+    return this.renderData(data);
+  }
   if (this.data !== data) {
     this.reset();
-    this.dropdown.html('');
+    this.dropdown.find('.multiselect-item').remove();
     this.renderData(data);
   }
 }
 
 MultiSelect.prototype.max = function(number) {
   this.maximum = number;
+  if (this.limit) this.limit.remove();
   this.limit = $('<li class="multiselect-limit">你只能选择最多' + number + '项</li>');
   this.limit.appendTo(this.dropdown).hide();
 }

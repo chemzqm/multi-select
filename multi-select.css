@@ -146,7 +146,7 @@
   white-space: nowrap;
 }
 
-.multiselect-search-field input {
+.multiselect-container .multiselect-search-field input {
   padding: 5px;
   margin: 1px 0;
   font-family: sans-serif;
