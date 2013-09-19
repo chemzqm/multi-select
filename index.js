@@ -301,6 +301,7 @@ MultiSelect.prototype.rebuild = function(data) {
   }
   this.reset();
   this.dropdown.find('.multiselect-item').remove();
+  this.dropdown.find('.multiselect-group').remove();
   this.renderData(data);
 }
 
