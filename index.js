@@ -2,6 +2,8 @@ var Emitter = require('emitter');
 var template = require('./template');
 var $ = require('jquery');
 var keyname = require('keyname');
+var equals = require ('equals');
+
 
 function MultiSelect (input, data) {
   this.source = $(input);
@@ -285,16 +287,17 @@ function contains (arr, sub) {
 }
 
 MultiSelect.prototype.rebuild = function(data) {
-  if (this.data === data) return;
+  if (equals(this.data, data)) return;
   if (!this.data) return this.renderData(data);
-  var ids = this.data.map(function(d) {
+  var ids = data.map(function(d) {
     return d.id.toString();
   });
   var v = this.value();
   if (v && contains(ids, v.split(','))) {
+    //only limit, no reset
     return this.renderData(data);
   }
-  if (this.data !== data) {
+  else {
     this.reset();
     this.dropdown.find('.multiselect-item').remove();
     this.renderData(data);
