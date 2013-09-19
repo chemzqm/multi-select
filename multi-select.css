@@ -178,6 +178,9 @@
   border-radius: 0 0 4px 4px;
   -webkit-box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
   box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
+  max-height: 220px;
+  overflow: auto;
+  padding: 5px;
 }
 
 .multiselect-drop.multiselect-drop-active {
@@ -198,15 +201,18 @@
 }
 
 .multiselect-group {
-  padding: 3px 7px 4px;
+  padding: 0px 2px 4px;
   cursor: pointer;
-  font-weight: bold;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+.multiselect-title {
+  font-weight: bold;
 }
 
 .multiselect-item {
@@ -218,7 +224,7 @@ ul .multiselect-item {
   padding: 3px 0px 4px 20px;
 }
 
-.multiselect-item:hover {
+.multiselect-item:hover, .multiselect-item.active {
   cursor: pointer;
   background: #3875d7;
   color: #fff;
@@ -235,14 +241,15 @@ ul .multiselect-item {
 }
 
 .multiselect-arrow {
-  background: url("select2.png") -19px -7px no-repeat;
-}
-
-.multiselect-group.multiselect-collpase .multiselect-arrow {
   background: url("select2.png") -3px -7px no-repeat;
 }
 
-.multiselect-drop .multiselect-list {
+.multiselect-collapse .multiselect-arrow {
+  background: url("select2.png") -19px -7px no-repeat;
+}
+
+
+.multiselect-collapse .multiselect-list {
   display: none;
 }
 
