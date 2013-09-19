@@ -115,7 +115,7 @@ MultiSelect.prototype.prev = function() {
   })
   lis.removeClass('active');
   index = index === -1? lis.length - 1 : index;
-  lis.eq(index).addClass('active').parents('.multiselect-group').removeClass('multiselect-collapse');;
+  lis.eq(index).addClass('active').parents('.multiselect-group').removeClass('multiselect-collapse');
 }
 
 MultiSelect.prototype.select = function() {
@@ -297,11 +297,9 @@ MultiSelect.prototype.rebuild = function(data) {
     //only limit, no reset
     return this.renderData(data);
   }
-  else {
-    this.reset();
-    this.dropdown.find('.multiselect-item').remove();
-    this.renderData(data);
-  }
+  this.reset();
+  this.dropdown.find('.multiselect-item').remove();
+  this.renderData(data);
 }
 
 MultiSelect.prototype.max = function(number) {
