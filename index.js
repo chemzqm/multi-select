@@ -89,7 +89,9 @@ MultiSelect.prototype.initEvents = function() {
 MultiSelect.prototype.next = function() {
   this.showDropdown();
   if (this.limit.is(':visible')) return;
-  var lis = this.dropdown.find('.multiselect-item');
+  var lis = this.dropdown.find('.multiselect-item').filter(function(i) {
+      return this.style.display !== 'none';
+  });
   var curr, index = 0;
   lis.each(function(i) {
     if ($(this).hasClass('active')) {
@@ -105,7 +107,7 @@ MultiSelect.prototype.next = function() {
 MultiSelect.prototype.prev = function() {
   this.showDropdown();
   if (this.limit.is(':visible')) return;
-  var lis = this.dropdown.find('.multiselect-item');
+  var lis = this.dropdown.find('.multiselect-item').filter(':visible');
   var curr, index = lis.length - 1;
   lis.each(function(i) {
     if ($(this).hasClass('active')) {
