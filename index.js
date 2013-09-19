@@ -297,11 +297,9 @@ MultiSelect.prototype.rebuild = function(data) {
     //only limit, no reset
     return this.renderData(data);
   }
-  else {
-    this.reset();
-    this.dropdown.find('.multiselect-item').remove();
-    this.renderData(data);
-  }
+  this.reset();
+  this.dropdown.find('.multiselect-item').remove();
+  this.renderData(data);
 }
 
 MultiSelect.prototype.max = function(number) {
