@@ -313,6 +313,8 @@ MultiSelect.prototype.max = function(number) {
 }
 
 MultiSelect.prototype.appendValue = function(id) {
+  var vs = this.value().split(',');
+  if (vs.indexOf(id) !== -1) return;
   var li = this.dropdown.find('[data-id="' + id + '"]');
   var text = li.html();
   $('<li class="multiselect-search-choice" data-id="' + id + '"><div>' + text + '</div>'+
