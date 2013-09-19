@@ -26,11 +26,13 @@ function require(path, parent, orig) {
   // perform real require()
   // by invoking the module's
   // registered function
-  if (!module.exports) {
+  if (!module._resolving && !module.exports) {
     var mod = {};
     mod.exports = {};
     mod.client = mod.component = true;
+    module._resolving = true;
     module.call(this, mod.exports, require.relative(resolved), mod);
+    delete module._resolving;
     module.exports = mod.exports;
   }
 
@@ -10018,11 +10020,200 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 })( window );
 
 });
+require.register("jkroso-type/index.js", function(exports, require, module){
+
+/**
+ * refs
+ */
+
+var toString = Object.prototype.toString;
+
+/**
+ * Return the type of `val`.
+ *
+ * @param {Mixed} val
+ * @return {String}
+ * @api public
+ */
+
+module.exports = function(v){
+  // .toString() is slow so try avoid it
+  return typeof v === 'object'
+    ? types[toString.call(v)]
+    : typeof v
+};
+
+var types = {
+  '[object Function]': 'function',
+  '[object Date]': 'date',
+  '[object RegExp]': 'regexp',
+  '[object Arguments]': 'arguments',
+  '[object Array]': 'array',
+  '[object String]': 'string',
+  '[object Null]': 'null',
+  '[object Undefined]': 'undefined',
+  '[object Number]': 'number',
+  '[object Boolean]': 'boolean',
+  '[object Object]': 'object',
+  '[object Text]': 'textnode',
+  '[object Uint8Array]': '8bit-array',
+  '[object Uint16Array]': '16bit-array',
+  '[object Uint32Array]': '32bit-array',
+  '[object Uint8ClampedArray]': '8bit-array',
+  '[object Error]': 'error'
+}
+
+if (typeof window != 'undefined') {
+  for (var el in window) if (/^HTML\w+Element$/.test(el)) {
+    types['[object '+el+']'] = 'element'
+  }
+}
+
+module.exports.types = types
+
+});
+require.register("jkroso-equals/index.js", function(exports, require, module){
+
+var type = require('type')
+
+/**
+ * assert all values are equal
+ *
+ * @param {Any} [...]
+ * @return {Boolean}
+ */
+
+module.exports = function(){
+	var i = arguments.length - 1
+	while (i > 0) {
+		if (!compare(arguments[i], arguments[--i])) return false
+	}
+	return true
+}
+
+// (any, any, [array]) -> boolean
+function compare(a, b, memos){
+	// All identical values are equivalent
+	if (a === b) return true
+	var fnA = types[type(a)]
+	if (fnA !== types[type(b)]) return false
+	return fnA ? fnA(a, b, memos) : false
+}
+
+var types = {}
+
+// (Number) -> boolean
+types.number = function(a){
+	// NaN check
+	return a !== a
+}
+
+// (function, function, array) -> boolean
+types['function'] = function(a, b, memos){
+	return a.toString() === b.toString()
+		// Functions can act as objects
+	  && types.object(a, b, memos) 
+		&& compare(a.prototype, b.prototype)
+}
+
+// (date, date) -> boolean
+types.date = function(a, b){
+	return +a === +b
+}
+
+// (regexp, regexp) -> boolean
+types.regexp = function(a, b){
+	return a.toString() === b.toString()
+}
+
+// (DOMElement, DOMElement) -> boolean
+types.element = function(a, b){
+	return a.outerHTML === b.outerHTML
+}
+
+// (textnode, textnode) -> boolean
+types.textnode = function(a, b){
+	return a.textContent === b.textContent
+}
+
+// decorate `fn` to prevent it re-checking objects
+// (function) -> function
+function memoGaurd(fn){
+	return function(a, b, memos){
+		if (!memos) return fn(a, b, [])
+		var i = memos.length, memo
+		while (memo = memos[--i]) {
+			if (memo[0] === a && memo[1] === b) return true
+		}
+		return fn(a, b, memos)
+	}
+}
+
+types['arguments'] =
+types.array = memoGaurd(compareArrays)
+
+// (array, array, array) -> boolean
+function compareArrays(a, b, memos){
+	var i = a.length
+	if (i !== b.length) return false
+	memos.push([a, b])
+	while (i--) {
+		if (!compare(a[i], b[i], memos)) return false
+	}
+	return true
+}
+
+types.object = memoGaurd(compareObjects)
+
+// (object, object, array) -> boolean
+function compareObjects(a, b, memos) {
+	var ka = getEnumerableProperties(a)
+	var kb = getEnumerableProperties(b)
+	var i = ka.length
+
+	// same number of properties
+	if (i !== kb.length) return false
+
+	// although not necessarily the same order
+	ka.sort()
+	kb.sort()
+
+	// cheap key test
+	while (i--) if (ka[i] !== kb[i]) return false
+
+	// remember
+	memos.push([a, b])
+
+	// iterate again this time doing a thorough check
+	i = ka.length
+	while (i--) {
+		var key = ka[i]
+		if (!compare(a[key], b[key], memos)) return false
+	}
+
+	return true
+}
+
+// (object) -> array
+function getEnumerableProperties (object) {
+	var result = []
+	for (var k in object) if (k !== 'constructor') {
+		result.push(k)
+	}
+	return result
+}
+
+// expose compare
+module.exports.compare = compare
+
+});
 require.register("multi-select/index.js", function(exports, require, module){
 var Emitter = require('emitter');
 var template = require('./template');
 var $ = require('jquery');
 var keyname = require('keyname');
+var equals = require ('equals');
+
 
 function MultiSelect (input, data) {
   this.source = $(input);
@@ -10069,6 +10260,9 @@ MultiSelect.prototype.initEvents = function() {
   this.container.on('click', this._containerClick);
   this._dropdownClick = this.dropdownClick.bind(this);
   this.dropdown.on('click', this._dropdownClick);
+  this.dropdown.on('mouseenter', function() {
+    this.dropdown.find('.multiselect-item').removeClass('active');
+  }.bind(this));
   this.input.on('focus', function (e) {
     var input = $(e.target);
     if (input.hasClass('multiselect-default')) {
@@ -10086,11 +10280,66 @@ MultiSelect.prototype.initEvents = function() {
         this.saveItems();
         this.hideLimit();
         break;
+      case 'up':
+        this.prev();
+        break;
+      case 'down':
+        this.next();
+        break;
+      case 'enter':
+        this.select();
+        break;
       default:
     }
   }.bind(this))
   this._documentClick = this.documentClick.bind(this);
   $(document).on('click', this._documentClick);
+}
+
+MultiSelect.prototype.next = function() {
+  this.showDropdown();
+  if (this.limit.is(':visible')) return;
+  var lis = this.dropdown.find('.multiselect-item');
+  var curr, index = 0;
+  lis.each(function(i) {
+    if ($(this).hasClass('active')) {
+      curr = $(this);
+      index = i + 1;
+    }
+  })
+  lis.removeClass('active');
+  index = index === lis.length? 0 : index;
+  lis.eq(index).addClass('active').parents('.multiselect-group').removeClass('multiselect-collapse');
+}
+
+MultiSelect.prototype.prev = function() {
+  this.showDropdown();
+  if (this.limit.is(':visible')) return;
+  var lis = this.dropdown.find('.multiselect-item');
+  var curr, index = lis.length - 1;
+  lis.each(function(i) {
+    if ($(this).hasClass('active')) {
+      curr = $(this);
+      index = i - 1;
+    }
+  })
+  lis.removeClass('active');
+  index = index === -1? lis.length - 1 : index;
+  lis.eq(index).addClass('active').parents('.multiselect-group').removeClass('multiselect-collapse');
+}
+
+MultiSelect.prototype.select = function() {
+  var active = this.dropdown.find('.active');
+  if (active.length > 0) {
+    var id = active.attr('data-id');
+    active.removeClass('active');
+    this.appendValue(id);
+    this.saveItems();
+    this.container.removeClass('multiselect-dropdown-open');
+    this.container.removeClass('multiselect-focus');
+    this.dropdown.hide();
+    this.input.focus();
+  }
 }
 
 MultiSelect.prototype.hideLimit = function() {
@@ -10131,33 +10380,36 @@ MultiSelect.prototype.containerClick = function(e) {
     this.dropdown.hide();
     this.container.removeClass('multiselect-focus');
   }else {
-    var v = this.value();
-    var len = v.split(',').length;
-    if (this.limit) {
-      if (v && len === this.maximum) {
-        this.limit.show();
-        this.limit.siblings().hide();
-      } else {
-        this.hideLimit();
-      }
-    }
-    this.container.addClass('multiselect-dropdown-open');
-    this.container.addClass('multiselect-focus');
-    this.dropdown.show();
+    this.showDropdown();
   }
+}
+
+MultiSelect.prototype.showDropdown = function() {
+  var v = this.value();
+  var len = v.split(',').length;
+  if (this.limit) {
+    if (v && len === this.maximum) {
+      this.limit.show();
+      this.limit.siblings().hide();
+    } else {
+      this.hideLimit();
+    }
+  }
+  this.container.addClass('multiselect-dropdown-open');
+  this.container.addClass('multiselect-focus');
+  this.dropdown.show();
 }
 
 MultiSelect.prototype.dropdownClick = function(e) {
   var el = $(e.target);
   e.stopPropagation();
-  if (el.hasClass('multiselect-group') || el.hasClass('multiselect-arrow')) {
-    var group = el.parent('.multiselect-group').addBack('.multiselect-group');
-    if (group.hasClass('multiselect-collpase')) {
-      group.next('.multiselect-list').hide();
-      group.removeClass('multiselect-collpase');
+  if (el.hasClass('multiselect-title') || el.hasClass('multiselect-arrow')) {
+    var group = el.parents('.multiselect-group');
+    var list =group.find('.multiselect-list');
+    if (group.hasClass('multiselect-collapse')) {
+      group.removeClass('multiselect-collapse');
     } else {
-      group.next('.multiselect-list').show();
-      group.addClass('multiselect-collpase');
+      group.addClass('multiselect-collapse');
     }
   } else if (el.hasClass('multiselect-item')) {
     var id = el.attr('data-id');
@@ -10191,10 +10443,10 @@ MultiSelect.prototype.documentClick = function(e) {
 }
 
 MultiSelect.prototype.addGroup = function(parent, data) {
-  var title = $('<div class="multiselect-group"><i class="multiselect-arrow"></i>' + data.name + '</div>');
+  var title = $('<div class="multiselect-group multiselect-collapse"><div class="multiselect-title"><i class="multiselect-arrow"></i>' + data.name + '</div></div>');
   var ul = $('<ul class="multiselect-list"></ul>');
   title.appendTo(parent);
-  ul.appendTo(parent);
+  ul.appendTo(title);
   data.values.forEach(function(o) {
     this.addItem(ul, o.id, o.text);
   }.bind(this));
@@ -10245,20 +10497,19 @@ function contains (arr, sub) {
 }
 
 MultiSelect.prototype.rebuild = function(data) {
-  if (this.data === data) return;
+  if (equals(this.data, data)) return;
   if (!this.data) return this.renderData(data);
-  var ids = this.data.map(function(d) {
+  var ids = data.map(function(d) {
     return d.id.toString();
   });
   var v = this.value();
   if (v && contains(ids, v.split(','))) {
+    //only limit, no reset
     return this.renderData(data);
   }
-  if (this.data !== data) {
-    this.reset();
-    this.dropdown.find('.multiselect-item').remove();
-    this.renderData(data);
-  }
+  this.reset();
+  this.dropdown.find('.multiselect-item').remove();
+  this.renderData(data);
 }
 
 MultiSelect.prototype.max = function(number) {
@@ -10291,6 +10542,7 @@ module.exports = '<div class="multiselect">\n  <div class="multiselect-container
 
 
 
+
 require.alias("component-emitter/index.js", "multi-select/deps/emitter/index.js");
 require.alias("component-emitter/index.js", "emitter/index.js");
 require.alias("component-indexof/index.js", "component-emitter/deps/indexof/index.js");
@@ -10300,5 +10552,9 @@ require.alias("component-keyname/index.js", "keyname/index.js");
 
 require.alias("component-jquery/index.js", "multi-select/deps/jquery/index.js");
 require.alias("component-jquery/index.js", "jquery/index.js");
+
+require.alias("jkroso-equals/index.js", "multi-select/deps/equals/index.js");
+require.alias("jkroso-equals/index.js", "equals/index.js");
+require.alias("jkroso-type/index.js", "jkroso-equals/deps/type/index.js");
 
 require.alias("multi-select/index.js", "multi-select/index.js");
