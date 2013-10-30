@@ -14,7 +14,7 @@ function MultiSelect (input, data) {
   this.input = this.container.find('input');
   var w = this.source.width();
   this.el.width(w);
-  if (data) { this.renderData(data); }
+  this.renderData(data || []);
   this.initEvents();
 }
 
@@ -40,6 +40,11 @@ MultiSelect.prototype.renderData = function(data) {
       this.addItem(parent, o.id, o.text);
     }
   }.bind(this));
+  if (data.length === 0) {
+    this.dropdown.append('<li class="multiselect-empty">可选项为空</li>')
+  } else {
+    this.dropdown.find('.multiselect-empty').remove();
+  }
   this.rendered = true;
   var v = this.source.val(), li, id;
   if (v) this.value(v);
@@ -251,6 +256,7 @@ MultiSelect.prototype.addItem = function(ul, id, text) {
 
 MultiSelect.prototype.value = function(v) {
   if (arguments.length === 0) return this.source.val();
+  if(!this.data || this.data.length === 0) return;
   var pre = this.source.val();
   this.dropdown.find('.multiselect-item').show();
   this.container.find('.multiselect-search-choice').remove();

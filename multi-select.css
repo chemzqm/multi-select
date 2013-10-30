@@ -253,7 +253,8 @@ ul .multiselect-item {
   display: none;
 }
 
-.multiselect-limit {
+.multiselect-limit,
+.multiselect-empty{
   list-style: none;
   margin: 4px;
   background: #f4f4f4;;
