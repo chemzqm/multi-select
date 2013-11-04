@@ -24,6 +24,7 @@
       <li>支持键盘操作</li>
     </ul>
     <button id="reset">reset</button>
+    <button id="rebuild0">rebuild0</button>
     <div class="group">
       <label for="select">测试</label>
       <input type="hidden" id="select" name="select" style="width:300px" class="select2-offscreen" value="3">
@@ -80,6 +81,15 @@
       reset.addEventListener('click', function(){
         select.reset();
       });
+
+      (function(){
+        var rebuild = document.getElementById('rebuild0');
+        rebuild.addEventListener('click', function(){
+          select.rebuild([
+            {id: 1, text: 'Beijing'},
+          ]);
+        });
+      })()
 
       select.on('change', function(v){
         var el = document.getElementById('value');
