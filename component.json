@@ -2,7 +2,7 @@
   "name": "multi-select",
   "repo": "chemzqm/multi-select",
   "description": "A simple multi tree select component",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "keywords": [],
   "dependencies": {
     "component/emitter": "*",
