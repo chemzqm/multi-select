@@ -32,6 +32,8 @@ MultiSelect.prototype.placeholder = function(placeholder) {
 
 MultiSelect.prototype.renderData = function(data) {
   this.data = data;
+  this.dropdown.find('.multiselect-item').remove();
+  this.dropdown.find('.multiselect-group').remove();
   data.forEach(function(o) {
     var parent = this.dropdown;
     if (Array.isArray(o.values)) {
@@ -343,8 +345,6 @@ MultiSelect.prototype.rebuild = function(data) {
     return this.renderData(data);
   }
   this.reset();
-  this.dropdown.find('.multiselect-item').remove();
-  this.dropdown.find('.multiselect-group').remove();
   this.renderData(data);
 }
 
